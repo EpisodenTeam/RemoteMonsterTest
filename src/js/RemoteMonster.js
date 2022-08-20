@@ -3,7 +3,8 @@ import Remon from '@remotemonster/sdk'
 
 class RemoteMonster {
    remotemonster = null;
-   
+   peerconnection = null;
+
    config = {
    config : {
       // dev:{
@@ -119,14 +120,24 @@ class RemoteMonster {
    }
   }
 
-  caller(channelId){
-   console.log("caller실행")
-   this.remotemonster.connectCall(channelId)
+  async caller(channelId) {
+    console.log("caller실행");
+    await this.remotemonster.connectCall(channelId);
+
+    this.peerconnection = this.remotemonster.context.peerConnection;
+    if (this.peerconnection) {
+      this.setPeerconnectionHandler();
+    }
   }
 
-  callee(channelId){
-   console.log("callee실행")
-   this.remotemonster.connectCall(channelId)
+  async callee(channelId) {
+    console.log("callee실행");
+    await this.remotemonster.connectCall(channelId);
+
+    this.peerconnection = this.remotemonster.context.peerConnection;
+    if (this.peerconnection) {
+      this.setPeerconnectionHandler();
+    }
   }
 
   callClose(){
@@ -172,6 +183,64 @@ class RemoteMonster {
      console.log("error", JSON.stringify(this.config))
    })
  }
+
+ setPeerconnectionHandler() {
+  // connectionstatechange
+  this.peerconnection.addEventListener("connectionstatechange", () => {
+    console.log(
+      `connectionstatechange: ${this.peerconnection.connectionState}`
+    );
+  });
+
+  // iceconnectionstatechange
+  this.peerconnection.addEventListener("iceconnectionstatechange", () => {
+    console.log(
+      `iceconnectionstatechange: ${this.peerconnection.iceConnectionState}`
+    );
+  });
+
+  // iceconnectionstatechange
+  this.peerconnection.addEventListener("iceconnectionstatechange", () => {
+    console.log(
+      `iceconnectionstatechange: ${this.peerconnection.iceGatheringState}`
+    );
+  });
+
+  // signalingstatechange
+  this.peerconnection.addEventListener("signalingstatechange", () => {
+    console.log(
+      `signalingstatechange: ${this.peerconnection.signalingState}`
+    );
+  });
+
+  // get stats
+  const interval = 10;
+  let bytesReceived = 0;
+  let bytesSent = 0;
+  let outboundBitrate = 0;
+  let inboundBitrate = 0;
+  setInterval(async () => {
+    const stats = await this.peerconnection.getStats(); // 브라우저마다 다를 수 있으니 확인 필요.
+    stats.forEach((report) => {
+      if (report.type === "inbound-rtp" && report.kind === "video") {
+        inboundBitrate = parseInt(
+          ((report.bytesReceived - bytesReceived) * 8) / interval
+        );
+        bytesReceived = report.bytesReceived;
+      }
+      if (report.type === "outbound-rtp" && report.kind === "video") {
+        outboundBitrate = parseInt(
+          ((report.bytesSent - bytesSent) * 8) / interval
+        );
+        bytesSent = report.bytesSent;
+      }
+    });
+
+    console.log(
+      `stats: outbound bitrate:${outboundBitrate} inbound bitrate:${inboundBitrate}`
+    );
+  }, interval * 1000);
+}
 
   async createRoom(hostRoomId){
    this.remotemonster.createRoom(hostRoomId)
