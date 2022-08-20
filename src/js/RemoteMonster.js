@@ -10,8 +10,8 @@ class RemoteMonster {
       //    logLevel: 'DEBUG' // SILENT, ERROR, WARN, INFO, DEBUG, VERBOSE 순으로 로그 레벨을 설정
       // },
       credential: {
-         serviceId: 'a89a8f14-75bc-43a3-9037-3b0023a0b6fb', // 콘솔에서 획득한 Service ID
-         key: '7fa96ed9c2f0ed8ebdad4f9a3f6283fea366f0f7fe52e7978b8bbcfa2b7e199c'               // 콘솔에서 획득한 Service Key
+         serviceId: '58ef8591-139f-493f-a016-041aa446a772', // 콘솔에서 획득한 Service ID
+         key: '7b06e581c453452f623c52a0eb68f64245d29e86b2dad792d8d4ff2d9308185d'               // 콘솔에서 획득한 Service Key
       },
       view: {
          local: '#localVideo', // 로컬(자신) 비디오 태그 지정
@@ -53,6 +53,9 @@ class RemoteMonster {
       onClose() {
          console.log("onClose 종료")
       },
+      onMessage(msg){
+         console.log("메시지 도착", msg)
+      },
       async onRoomEvent(evt){      
          let coconfig = {
             config : {
@@ -60,8 +63,8 @@ class RemoteMonster {
                //    logLevel: 'DEBUG' // SILENT, ERROR, WARN, INFO, DEBUG, VERBOSE 순으로 로그 레벨을 설정
                // },
                credential: {
-                  serviceId: 'a89a8f14-75bc-43a3-9037-3b0023a0b6fb', // 콘솔에서 획득한 Service ID
-                  key: '7fa96ed9c2f0ed8ebdad4f9a3f6283fea366f0f7fe52e7978b8bbcfa2b7e199c'               // 콘솔에서 획득한 Service Key
+                  serviceId: '58ef8591-139f-493f-a016-041aa446a772', // 콘솔에서 획득한 Service ID
+                  key: '7b06e581c453452f623c52a0eb68f64245d29e86b2dad792d8d4ff2d9308185d'               // 콘솔에서 획득한 Service Key
                },
                view: {
                   local: '#localVideo', // 로컬(자신) 비디오 태그 지정
@@ -100,9 +103,7 @@ class RemoteMonster {
          //   otherVideos.removeChild(video);
          }
       },
-      onMessage(msg){
-         console.log("메시지 도착", msg)
-      }
+      
    }
    }
    
@@ -155,6 +156,27 @@ class RemoteMonster {
   async hostRoomList(hostRoomId){
    var searchResult= await this.remotemonster.fetchRooms(hostRoomId); 
    searchResult.forEach( ({id}, i) => {
+      let coconfig = {
+         config : {
+            // dev:{
+            //    logLevel: 'DEBUG' // SILENT, ERROR, WARN, INFO, DEBUG, VERBOSE 순으로 로그 레벨을 설정
+            // },
+            credential: {
+               serviceId: '58ef8591-139f-493f-a016-041aa446a772', // 콘솔에서 획득한 Service ID
+               key: '7b06e581c453452f623c52a0eb68f64245d29e86b2dad792d8d4ff2d9308185d'               // 콘솔에서 획득한 Service Key
+            },
+            view: {
+               local: '#localVideo', // 로컬(자신) 비디오 태그 지정
+               remote: '#remoteVideo', // 리모트(상대방) 비디오 태그 지정
+            },
+            media: {
+               video: true,
+               audio: true
+               // music: 모든 소리를 가공없이 전달, voice(기본값): 주변 소음을 제거하고 음성을 전달 - 통화에 적합
+               // rtc: {audioType: "music"}   
+            }
+         }
+      }
      console.log("호스트방에 있는 사람들 아이디 : ", id, i)
      const newVideo = document.createElement('video');
      newVideo.id = id;
@@ -164,7 +186,7 @@ class RemoteMonster {
      // otherVideos.appendChild(newVideo);
   
      // //config에 비디오 태그를 지정
-     this.config.config.view.remote = `#${newVideo.id}`;
+     coconfig.config.view.remote = `#uRemote01`;
      console.log("cocofing", JSON.stringify(this.config))
      const remon = new Remon(this.config)
      console.log("remon", remon)
@@ -185,7 +207,8 @@ class RemoteMonster {
   }
 
   sendMsg(text) {
-   this.remontemonster.sendMessage(text)
+   console.log("text는 이거", text)
+   this.remotemonster.sendMessage(text)
   }
 }  
 

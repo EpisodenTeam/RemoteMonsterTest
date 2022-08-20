@@ -6,7 +6,7 @@
     <video id="remoteVideo" playsinline autoplay></video>
     <video id="uRemote01" playsinline autoplay></video>
     <button @click="caller()">전화걸기</button>
-    <button @click="callee()">전화받기</button>
+    <button @click="joinHostRoom()">전화받기</button>
     <button @click="callClose()">통화종료</button>
     <button @click="callLocalMute()">음소거</button>
     <button @click="checkRoomList()">방조회</button>
