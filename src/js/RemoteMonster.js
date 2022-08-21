@@ -199,7 +199,7 @@ class RemoteMonster {
     );
   });
 
-  // iceconnectionstatechange
+  // icegatheringstatechange
   this.peerconnection.addEventListener("icegatheringstatechange", () => {
     console.log(
       `icegatheringstatechange: ${this.peerconnection.iceGatheringState}`
