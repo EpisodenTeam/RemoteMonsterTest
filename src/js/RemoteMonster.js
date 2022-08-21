@@ -200,9 +200,9 @@ class RemoteMonster {
   });
 
   // iceconnectionstatechange
-  this.peerconnection.addEventListener("iceconnectionstatechange", () => {
+  this.peerconnection.addEventListener("icegatheringstatechange", () => {
     console.log(
-      `iceconnectionstatechange: ${this.peerconnection.iceGatheringState}`
+      `icegatheringstatechange: ${this.peerconnection.iceGatheringState}`
     );
   });
 
